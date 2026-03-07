@@ -14,9 +14,12 @@ public class MainController {
     private Tab employeesTab;
     @FXML
     private Tab departmentsTab;
+    @FXML
+    private Tab itemsTab;
 
     private EmployeeController employeeController;
     private DepartmentController departmentController;
+    private ItemController itemController;
 
     @FXML
     public void initialize() {
@@ -34,6 +37,14 @@ public class MainController {
             FXMLLoader departmentLoader = new FXMLLoader(getClass().getResource("/fxml/department.fxml"));
             departmentsTab.setContent(departmentLoader.load());
             departmentController = departmentLoader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try{
+            FXMLLoader itemLoader = new FXMLLoader(getClass().getResource("/fxml/item.fxml"));
+            itemsTab.setContent(itemLoader.load());
+            itemController = itemLoader.getController();
         } catch (IOException e) {
             e.printStackTrace();
         }

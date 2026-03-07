@@ -28,7 +28,6 @@
         <SplitPane dividerPositions="0.5" orientation="HORIZONTAL">
             <VBox VBox.vgrow="ALWAYS">
                 <Label text="Department Management" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                <Label text="Department Management" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
                 <Label text="Departments" style="-fx-font-weight: bold; -fx-padding: 5px;"/>
                 <TableView fx:id="departmentTable" VBox.vgrow="ALWAYS">
                     <columns>
@@ -49,7 +48,6 @@
                     </columns>
                 </TableView>
             </VBox>
-            <Label text="Department Management" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
         </SplitPane>
     </center>
 </BorderPane>

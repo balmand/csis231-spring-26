@@ -14,6 +14,7 @@
         <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE">
             <Tab text="Employees" fx:id="employeesTab"/>
             <Tab text="Departments" fx:id="departmentsTab"/>
+            <Tab text="Items" fx:id="itemsTab"/>
         </TabPane>
     </center>
 </BorderPane>
