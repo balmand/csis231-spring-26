@@ -63,4 +63,7 @@ public class UserController {
         emailField.clear();
         passwordField.clear();
     }
+    private void navigateToMainPage() {
+        statusLabel.setText("Login successful.");
+    }
 }
