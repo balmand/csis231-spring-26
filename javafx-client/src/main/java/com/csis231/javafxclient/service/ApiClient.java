@@ -2,6 +2,7 @@ package com.csis231.javafxclient.service;
 
 import com.csis231.javafxclient.model.DepartmentDto;
 import com.csis231.javafxclient.model.EmployeeDto;
+import com.csis231.javafxclient.model.LoginDto;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -147,4 +148,22 @@ public class ApiClient {
             throw new RuntimeException("Failed to delete department: " + response.statusCode());
         }
     }
+
+    public boolean authenticate(LoginDto loginDto)  throws IOException, InterruptedException {
+
+        String json = gson.toJson(loginDto);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/login"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return response.body().equalsIgnoreCase("true");
+    }
+
+
+
 }

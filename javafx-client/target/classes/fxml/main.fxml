@@ -5,7 +5,8 @@
 <?import javafx.geometry.Insets?>
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.csis231.javafxclient.controller.MainController">
+            fx:controller="com.csis231.javafxclient.controller.MainController"
+            fx:id="rootPane">
     <top>
         <Label text="Employee &amp; Department Management System" 
                style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10px;"/>
