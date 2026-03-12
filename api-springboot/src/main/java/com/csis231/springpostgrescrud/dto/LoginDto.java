@@ -1,15 +1,14 @@
 package com.csis231.springpostgrescrud.dto;
-
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
-public class UserDto {
-    private Long id;
+@NoArgsConstructor
+public class LoginDto {
     private String username;
-    private String email;
     private String password;
 }

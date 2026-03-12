@@ -2,9 +2,10 @@ package com.csis231.javafxclient.service;
 
 import com.csis231.javafxclient.model.DepartmentDto;
 import com.csis231.javafxclient.model.EmployeeDto;
-import com.csis231.javafxclient.model.UserDTO;
+import com.csis231.javafxclient.model.UserDto;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.csis231.javafxclient.model.OrderDto;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,10 +18,38 @@ public class ApiClient {
     private static final String BASE_URL = "http://localhost:8080/api/v1";
     private final HttpClient httpClient;
     private final Gson gson;
+    private String authToken;
 
     public ApiClient() {
         this.httpClient = HttpClient.newHttpClient();
         this.gson = new Gson();
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    // User endpoints
+    public UserDto registerUser(UserDto user) throws IOException, InterruptedException {
+        String json = gson.toJson(user);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/users/register"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200 || response.statusCode() == 201) {
+            return gson.fromJson(response.body(), UserDto.class);
+        }
+
+        throw new RuntimeException("Failed to register user: " + response.statusCode() + " - " + response.body());
     }
 
     // Employee endpoints
@@ -32,7 +61,7 @@ public class ApiClient {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
-            return gson.fromJson(response.body(), new TypeToken<List<EmployeeDto>>(){}.getType());
+            return gson.fromJson(response.body(), new TypeToken<List<EmployeeDto>>() {}.getType());
         }
         throw new RuntimeException("Failed to fetch employees: " + response.statusCode());
     }
@@ -89,7 +118,7 @@ public class ApiClient {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
-            return gson.fromJson(response.body(), new TypeToken<List<DepartmentDto>>(){}.getType());
+            return gson.fromJson(response.body(), new TypeToken<List<DepartmentDto>>() {}.getType());
         }
         throw new RuntimeException("Failed to fetch departments: " + response.statusCode());
     }
@@ -148,23 +177,58 @@ public class ApiClient {
             throw new RuntimeException("Failed to delete department: " + response.statusCode());
         }
     }
-
-    public UserDTO registerUser(UserDTO user) throws IOException, InterruptedException {
-        String json = gson.toJson(user);
-
+    public List<OrderDto> getAllOrders() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/users/register"))
+                .uri(URI.create(BASE_URL + "/orders"))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 200) {
+            return gson.fromJson(response.body(), new TypeToken<List<OrderDto>>() {}.getType());
+        }
+        throw new RuntimeException("Failed to fetch orders: " + response.statusCode());
+    }
+
+    public OrderDto createOrder(OrderDto order) throws IOException, InterruptedException {
+        String json = gson.toJson(order);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/orders"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() == 201 || response.statusCode() == 200) {
-            return gson.fromJson(response.body(), UserDTO.class);
+        if (response.statusCode() == 201) {
+            return gson.fromJson(response.body(), OrderDto.class);
         }
-        throw new RuntimeException("Failed to register user: "
-                + response.statusCode() + " - " + response.body());
+        throw new RuntimeException("Failed to create order: " + response.statusCode() + " - " + response.body());
     }
 
+    public OrderDto updateOrder(Long id, OrderDto order) throws IOException, InterruptedException {
+        String json = gson.toJson(order);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/orders/" + id))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 200) {
+            return gson.fromJson(response.body(), OrderDto.class);
+        }
+        throw new RuntimeException("Failed to update order: " + response.statusCode() + " - " + response.body());
+    }
+
+    public void deleteOrder(Long id) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/orders/" + id))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("Failed to delete order: " + response.statusCode() + " - " + response.body());
+        }
+    }
 }
