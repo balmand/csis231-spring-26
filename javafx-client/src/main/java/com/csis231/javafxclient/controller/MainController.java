@@ -17,9 +17,12 @@ public class MainController {
     private Tab employeesTab;
     @FXML
     private Tab departmentsTab;
+    @FXML
+    private Tab ordersTab;
 
     private EmployeeController employeeController;
     private DepartmentController departmentController;
+    private OrderController orderController;
 
     @FXML
     public void initialize() {
@@ -74,6 +77,13 @@ public class MainController {
             e.printStackTrace();
         }
 
+        // Load order tab content
+        try {
+            FXMLLoader orderLoader = new FXMLLoader(getClass().getResource("/fxml/order-view.fxml"));
+            ordersTab.setContent(orderLoader.load());
+            orderController = orderLoader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 }
