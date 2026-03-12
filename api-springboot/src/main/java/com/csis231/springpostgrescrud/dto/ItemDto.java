@@ -1,5 +1,6 @@
 package com.csis231.springpostgrescrud.dto;
 
+import com.csis231.springpostgrescrud.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,6 @@ public class ItemDto {
     private Long id;
     private String name;
     private Integer serialNumber;
-    private String category;
+    private Category category;
     private String status;
 }

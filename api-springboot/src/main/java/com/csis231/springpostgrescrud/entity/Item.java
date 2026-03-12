@@ -21,7 +21,6 @@ public class Item {
     private String name;
 
     @Column(nullable = false)
-
     private Integer serialNumber;
 
     @PrePersist
@@ -31,7 +30,8 @@ public class Item {
         }
     }
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
     private String status;
 }

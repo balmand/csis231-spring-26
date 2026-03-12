@@ -27,7 +27,7 @@ public class ItemController {
     @FXML
     public TextField nameField;
     @FXML
-    public TextField categoryField;
+    public ComboBox<String> categoryComboBox;
     @FXML
     public TextField statusField;
 
@@ -60,6 +60,11 @@ public class ItemController {
 
         itemTable.setItems(itemList);
 
+        ObservableList<String> categories = FXCollections.observableArrayList(
+                "ELECTRONICS", "CLOTHING", "BOOKS"
+        );
+        categoryComboBox.setItems(categories);
+
         itemTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 loadItemToForm(newSelection);
@@ -80,7 +85,7 @@ public class ItemController {
         try {
             ItemDto item = new ItemDto();
             item.setName(nameField.getText());
-            item.setCategory(categoryField.getText());
+            item.setCategory(categoryComboBox.getValue());
             item.setStatus(statusField.getText());
 
             apiClient.createItem(item);
@@ -103,8 +108,8 @@ public class ItemController {
 
         try{
             selected.setName(nameField.getText());
-            selected.setCategory(categoryField.getText());
             selected.setStatus(statusField.getText());
+            selected.setCategory(categoryComboBox.getValue());
 
             apiClient.updateItem(selected.getId(), selected);
             statusLabel.setText("Item updated successfully!");
@@ -157,13 +162,13 @@ public class ItemController {
 
     private void loadItemToForm(ItemDto item) {
         nameField.setText(item.getName());
-        categoryField.setText(item.getCategory());
+        categoryComboBox.setValue(item.getCategory());
         statusField.setText(item.getStatus());
     }
 
     private void clearForm() {
         nameField.clear();
-        categoryField.clear();
+        categoryComboBox.getSelectionModel().clearSelection();
         statusField.clear();
     }
 }

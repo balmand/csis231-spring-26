@@ -12,7 +12,7 @@
                 <Label text="Name:" minWidth="100"/>
                 <TextField fx:id="nameField" prefWidth="200"/>
                 <Label text="Category:" minWidth="100"/>
-                <TextField fx:id="categoryField" prefWidth="200"/>
+                <ComboBox fx:id="categoryComboBox" prefWidth="200"/>
             </HBox>
             <HBox spacing="10">
                 <Label text="Status:" minWidth="100"/>
