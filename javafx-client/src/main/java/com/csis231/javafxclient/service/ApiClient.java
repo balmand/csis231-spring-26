@@ -2,7 +2,11 @@ package com.csis231.javafxclient.service;
 
 import com.csis231.javafxclient.model.DepartmentDto;
 import com.csis231.javafxclient.model.EmployeeDto;
+<<<<<<< HEAD
+import com.csis231.javafxclient.model.ItemDto;
+=======
 import com.csis231.javafxclient.model.UserDto;
+>>>>>>> upstream/main
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.csis231.javafxclient.model.OrderDto;
@@ -177,14 +181,46 @@ public class ApiClient {
             throw new RuntimeException("Failed to delete department: " + response.statusCode());
         }
     }
+<<<<<<< HEAD
+
+    // Item endpoints
+    public List<ItemDto> getAllItems() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/items"))
+=======
     public List<OrderDto> getAllOrders() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/orders"))
+>>>>>>> upstream/main
                 .GET()
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
+<<<<<<< HEAD
+            return gson.fromJson(response.body(), new TypeToken<List<ItemDto>>(){}.getType());
+        }
+        throw new RuntimeException("Failed to fetch items: " + response.statusCode());
+    }
+
+    public ItemDto getItemById(Long id) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/items/" + id))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 200) {
+            return gson.fromJson(response.body(), ItemDto.class);
+        }
+        throw new RuntimeException("Failed to fetch item: " + response.statusCode());
+    }
+
+    public ItemDto createItem(ItemDto item) throws IOException, InterruptedException {
+        String json = gson.toJson(item);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/items"))
+=======
             return gson.fromJson(response.body(), new TypeToken<List<OrderDto>>() {}.getType());
         }
         throw new RuntimeException("Failed to fetch orders: " + response.statusCode());
@@ -194,12 +230,24 @@ public class ApiClient {
         String json = gson.toJson(order);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/orders"))
+>>>>>>> upstream/main
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 201) {
+<<<<<<< HEAD
+            return gson.fromJson(response.body(), ItemDto.class);
+        }
+        throw new RuntimeException("Failed to create item: " + response.statusCode() + " - " + response.body());
+    }
+
+    public ItemDto updateItem(Long id, ItemDto item) throws IOException, InterruptedException {
+        String json = gson.toJson(item);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/items/" + id))
+=======
             return gson.fromJson(response.body(), OrderDto.class);
         }
         throw new RuntimeException("Failed to create order: " + response.statusCode() + " - " + response.body());
@@ -209,12 +257,23 @@ public class ApiClient {
         String json = gson.toJson(order);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/orders/" + id))
+>>>>>>> upstream/main
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
+<<<<<<< HEAD
+            return gson.fromJson(response.body(), ItemDto.class);
+        }
+        throw new RuntimeException("Failed to update item: " + response.statusCode());
+    }
+
+    public void deleteItem(Long id) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/items/" + id))
+=======
             return gson.fromJson(response.body(), OrderDto.class);
         }
         throw new RuntimeException("Failed to update order: " + response.statusCode() + " - " + response.body());
@@ -223,12 +282,18 @@ public class ApiClient {
     public void deleteOrder(Long id) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/orders/" + id))
+>>>>>>> upstream/main
                 .DELETE()
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+<<<<<<< HEAD
+        if (response.statusCode() != 204) {
+            throw new RuntimeException("Failed to delete item: " + response.statusCode());
+=======
         if (response.statusCode() != 200) {
             throw new RuntimeException("Failed to delete order: " + response.statusCode() + " - " + response.body());
+>>>>>>> upstream/main
         }
     }
 }

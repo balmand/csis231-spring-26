@@ -18,9 +18,13 @@
             <Tab text="Employees" fx:id="employeesTab"/>
 
             <Tab text="Departments" fx:id="departmentsTab"/>
+<<<<<<< HEAD
+            <Tab text="Items" fx:id="itemsTab"/>
+=======
 
             <Tab text="Orders" fx:id="ordersTab"/>
 
+>>>>>>> upstream/main
         </TabPane>
     </center>
 

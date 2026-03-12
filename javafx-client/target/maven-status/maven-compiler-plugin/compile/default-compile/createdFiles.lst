@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+com\csis231\javafxclient\model\ItemDto.class
+com\csis231\javafxclient\controller\EmployeeController$2.class
+com\csis231\javafxclient\service\ApiClient.class
+=======
 com\csis231\javafxclient\controller\OrderController.class
 com\csis231\javafxclient\model\OrderDto.class
 com\csis231\javafxclient\controller\EmployeeController$2.class
 com\csis231\javafxclient\service\ApiClient.class
 com\csis231\javafxclient\model\UserDto.class
+>>>>>>> upstream/main
 com\csis231\javafxclient\service\ApiClient$3.class
 com\csis231\javafxclient\controller\EmployeeController.class
 com\csis231\javafxclient\service\ApiClient$2.class
+com\csis231\javafxclient\controller\ItemController.class
 com\csis231\javafxclient\model\EmployeeDto.class
 com\csis231\javafxclient\model\DepartmentDto.class
 com\csis231\javafxclient\controller\MainController.class
