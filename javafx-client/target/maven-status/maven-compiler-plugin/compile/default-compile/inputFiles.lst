@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 C:\dev\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\model\ItemDto.java
 C:\dev\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\service\ApiClient.java
 C:\dev\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\controller\EmployeeController.java
@@ -7,3 +8,16 @@ C:\dev\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\co
 C:\dev\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\JavaFXClientApp.java
 C:\dev\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\model\EmployeeDto.java
 C:\dev\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\controller\ItemController.java
+=======
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\controller\MainController.java
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\model\UserDto.java
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\controller\EmployeeController.java
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\service\ApiClient.java
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\controller\DepartmentController.java
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\controller\OrderController.java
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\model\EmployeeDto.java
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\controller\UserController.java
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\model\DepartmentDto.java
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\JavaFXClientApp.java
+C:\Users\nnehm\csis231-spring-26\javafx-client\src\main\java\com\csis231\javafxclient\model\OrderDto.java
+>>>>>>> upstream/main
