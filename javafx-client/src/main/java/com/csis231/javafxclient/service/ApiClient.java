@@ -3,7 +3,6 @@ package com.csis231.javafxclient.service;
 import com.csis231.javafxclient.model.DepartmentDto;
 import com.csis231.javafxclient.model.EmployeeDto;
 import com.csis231.javafxclient.model.PagedResponseDto;
-import com.csis231.javafxclient.model.LoginDto;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -33,26 +32,6 @@ public class ApiClient {
 
     public String getAuthToken() {
         return authToken;
-    }
-
-    // User endpoints
-    public boolean authenticate(LoginDto login) throws IOException, InterruptedException {
-        String json = gson.toJson(login);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/users/login"))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() == 200) {
-            return gson.fromJson(response.body(), Boolean.class);
-        }
-        if (response.statusCode() == 401) {
-            return false;
-        }
-        throw new RuntimeException("Failed to authenticate: " + response.statusCode() + " - " + response.body());
     }
 
     // Employee endpoints

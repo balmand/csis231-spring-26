@@ -23,41 +23,10 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // Load employee tab content
-     //   try {
-      //      FXMLLoader employeeLoader = new FXMLLoader(getClass().getResource("/fxml/employee.fxml"));
-        //employeesTab.setContent(employeeLoader.load());
-         //   employeeController = employeeLoader.getController();
-       // } catch (IOException e) {
-       //     e.printStackTrace();
-      //  }
-
-        // Load department tab content
-       // try {
-           // FXMLLoader departmentLoader = new FXMLLoader(getClass().getResource("/fxml/department.fxml"));
-          //  departmentsTab.setContent(departmentLoader.load());
-          //  departmentController = departmentLoader.getController();
-      //  } catch (IOException e) {
-           // e.printStackTrace();
-       // }
-        mainTabPane.setVisible(false);
-        try {
-            FXMLLoader loginLoader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
-            BorderPane loginPane = loginLoader.load();
-            rootPane.setCenter(loginPane); // directly set center
-            LoginController loginController = loginLoader.getController();
-
-            // callback to load tabs after login success
-            loginController.setOnLoginSuccess(() -> loadMainTabs());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadMainTabs();
     }
 
     private void loadMainTabs() {
-        rootPane.setCenter(mainTabPane);
-        mainTabPane.setVisible(true);
-
         try {
             FXMLLoader employeeLoader = new FXMLLoader(getClass().getResource("/fxml/employee.fxml"));
             employeesTab.setContent(employeeLoader.load());
