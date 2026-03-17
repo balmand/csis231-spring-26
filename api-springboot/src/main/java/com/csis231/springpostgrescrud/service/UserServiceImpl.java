@@ -6,6 +6,8 @@ import com.csis231.springpostgrescrud.exeption.ResourceNotFoundException;
 import com.csis231.springpostgrescrud.mapper.UserMapper;
 import com.csis231.springpostgrescrud.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,6 +42,17 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(UserMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<UserDto> searchUsers(String q, Pageable pageable) {
+        String query = q == null ? "" : q.trim();
+        if (query.isEmpty()) {
+            return userRepository.findAll(pageable).map(UserMapper::toDto);
+        }
+        return userRepository
+                .findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query, pageable)
+                .map(UserMapper::toDto);
     }
 
     @Override

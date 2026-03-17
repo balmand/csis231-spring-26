@@ -1,6 +1,6 @@
 package com.csis231.javafxclient.controller;
 
-import com.csis231.javafxclient.model.UserDTO;
+import com.csis231.javafxclient.model.UserDto;
 import com.csis231.javafxclient.service.ApiClient;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -38,7 +38,7 @@ public class UserController {
     @FXML
     private void registerUser() {
         try {
-            UserDTO user = new UserDTO();
+            UserDto user = new UserDto();
             user.setUsername(usernameField.getText());
             user.setEmail(emailField.getText());
             user.setPassword(passwordField.getText());

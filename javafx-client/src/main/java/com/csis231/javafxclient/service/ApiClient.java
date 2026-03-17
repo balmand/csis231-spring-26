@@ -2,6 +2,8 @@ package com.csis231.javafxclient.service;
 
 import com.csis231.javafxclient.model.DepartmentDto;
 import com.csis231.javafxclient.model.EmployeeDto;
+import com.csis231.javafxclient.model.PagedResponseDto;
+import com.csis231.javafxclient.model.LoginDto;
 import com.csis231.javafxclient.model.UserDto;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -9,9 +11,11 @@ import com.csis231.javafxclient.model.OrderDto;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ApiClient {
@@ -50,6 +54,50 @@ public class ApiClient {
         }
 
         throw new RuntimeException("Failed to register user: " + response.statusCode() + " - " + response.body());
+    }
+
+    public boolean authenticate(LoginDto login) throws IOException, InterruptedException {
+        String json = gson.toJson(login);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/users/login"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 200) {
+            return gson.fromJson(response.body(), Boolean.class);
+        }
+        if (response.statusCode() == 401) {
+            return false;
+        }
+        throw new RuntimeException("Failed to authenticate: " + response.statusCode() + " - " + response.body());
+    }
+
+    public PagedResponseDto<UserDto> searchUsers(String q, int page, int size, String sortField, String sortDir)
+            throws IOException, InterruptedException {
+        String encodedQ = q == null ? "" : URLEncoder.encode(q, StandardCharsets.UTF_8);
+        String encodedSortField = sortField == null ? "username" : URLEncoder.encode(sortField, StandardCharsets.UTF_8);
+        String encodedSortDir = sortDir == null ? "asc" : URLEncoder.encode(sortDir, StandardCharsets.UTF_8);
+
+        String url = BASE_URL + "/users/search"
+                + "?q=" + encodedQ
+                + "&page=" + page
+                + "&size=" + size
+                + "&sortField=" + encodedSortField
+                + "&sortDir=" + encodedSortDir;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 200) {
+            return gson.fromJson(response.body(), new TypeToken<PagedResponseDto<UserDto>>() {}.getType());
+        }
+        throw new RuntimeException("Failed to search users: " + response.statusCode() + " - " + response.body());
     }
 
     // Employee endpoints
