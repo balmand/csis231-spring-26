@@ -2,6 +2,87 @@
 
 This repo’s Spring Boot API (`api-springboot/`) now supports **JWT-based auth**.
 
+Textual diagram (request flow):
+
+```text
+   (1) Register / Login
+Client  --------------------------->  API
+        POST /api/v1/users/register
+        POST /api/v1/users/login
+
+API  --------------------------->  Client
+     { token, user }
+
+
+   (2) Call protected endpoints
+Client  ---------------------------------------------->  API
+        GET /api/v1/auth/me
+        Authorization: Bearer <JWT>
+
+API: JwtAuthenticationFilter
+     - extract token from header
+     - verify signature + expiration
+     - set authenticated user (SecurityContext)
+
+Controller  ------------------------------------------>  Client
+            200 OK (if token valid)
+            401 Unauthorized (if missing/invalid token)
+```
+
+### JWT concept (what it is + why we use it)
+
+**JWT** stands for **JSON Web Token**. It’s a compact string that represents a user’s identity after they log in.
+
+- **What it contains**: a JWT has *claims* (data) like a **subject** (often the username) and an **expiration time**.
+- **How it’s trusted**: the server **signs** the token with a secret key. If anyone changes the token, the signature check fails.
+- **How it’s used**: the client stores the token and sends it on each request in an HTTP header:
+  - `Authorization: Bearer <token>`
+
+**Why we use JWTs in APIs:**
+
+- **Stateless authentication**: the server doesn’t need to store a session for every user. Each request “proves” who the user is by presenting a valid token.
+- **Works well for REST clients**: web apps, mobile apps, and desktop clients (like your JavaFX client) can all authenticate the same way.
+- **Expiration for safety**: tokens can be short-lived, limiting damage if a token is stolen.
+
+General diagram (sessions vs JWT):
+
+```text
+Option A) Traditional server sessions (stateful)
+
+   Login
+Client  --------------------->  Server
+        username + password
+
+Server --------------------->  Client
+       Set-Cookie: SESSION_ID=abc123
+       (Server stores session data for abc123)
+
+Next request
+Client  --------------------->  Server
+        Cookie: SESSION_ID=abc123
+
+Server: look up abc123 in server-side session store
+
+
+Option B) JWT (stateless)
+
+   Login
+Client  --------------------->  Server
+        username + password
+
+Server --------------------->  Client
+       JWT (signed, expires)
+       (No per-user session stored on server)
+
+Next request
+Client  --------------------->  Server
+        Authorization: Bearer <JWT>
+
+Server: verify signature + expiration, then trust the claims
+```
+
+Important: a JWT is **not encrypted** by default—it is only **signed**. That’s why you should never put secrets (like passwords) inside the token.
+
 ### What you get
 
 - **Register**: `POST /api/v1/users/register` → returns `{ token, user }`
