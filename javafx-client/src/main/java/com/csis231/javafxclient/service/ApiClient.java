@@ -195,6 +195,33 @@ public class ApiClient {
         throw new RuntimeException("Failed to create department: " + response.statusCode() + " - " + response.body());
     }
 
+    public PagedResponseDto<DepartmentDto> searchDepartments(String q, int page, int size, String sortField, String sortDir)
+            throws IOException, InterruptedException {
+        String encodedQ = q == null ? "" : URLEncoder.encode(q, StandardCharsets.UTF_8);
+        String encodedSortField = sortField == null ? "name" : URLEncoder.encode(sortField, StandardCharsets.UTF_8);
+        String encodedSortDir = sortDir == null ? "asc" : URLEncoder.encode(sortDir, StandardCharsets.UTF_8);
+
+        String url = BASE_URL + "/departments/search"
+                + "?q=" + encodedQ
+                + "&page=" + page
+                + "&size=" + size
+                + "&sortField=" + encodedSortField
+                + "&sortDir=" + encodedSortDir;
+
+        System.out.println(url);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 200) {
+            return gson.fromJson(response.body(), new TypeToken<PagedResponseDto<DepartmentDto>>() {}.getType());
+        }
+        throw new RuntimeException("Failed to search departments: " + response.statusCode() + " - " + response.body());
+    }
+
     public DepartmentDto updateDepartment(Long id, DepartmentDto department) throws IOException, InterruptedException {
         String json = gson.toJson(department);
         HttpRequest request = HttpRequest.newBuilder()
