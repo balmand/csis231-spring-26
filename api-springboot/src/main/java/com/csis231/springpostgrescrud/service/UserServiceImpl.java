@@ -1,5 +1,6 @@
 package com.csis231.springpostgrescrud.service;
 
+import com.csis231.springpostgrescrud.dto.AuthResponseDto;
 import com.csis231.springpostgrescrud.dto.LoginDto;
 import com.csis231.springpostgrescrud.dto.UserDto;
 import com.csis231.springpostgrescrud.entity.User;
@@ -7,9 +8,11 @@ import com.csis231.springpostgrescrud.exeption.BadRequestException;
 import com.csis231.springpostgrescrud.exeption.ResourceNotFoundException;
 import com.csis231.springpostgrescrud.mapper.UserMapper;
 import com.csis231.springpostgrescrud.repository.UserRepository;
+import com.csis231.springpostgrescrud.security.JwtService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -24,9 +27,11 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
-    public UserDto registerUser(UserDto userDto) {
+    public AuthResponseDto registerUser(UserDto userDto) {
         validateRegistration(userDto);
 
         if (userRepository.existsByUsernameIgnoreCase(userDto.getUsername().trim())) {
@@ -39,9 +44,10 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.toEntity(userDto);
         user.setUsername(userDto.getUsername().trim());
         user.setEmail(userDto.getEmail().trim());
-        user.setPassword(hashPassword(userDto.getPassword()));
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         User savedUser = userRepository.save(user);
-        return UserMapper.toDto(savedUser);
+        String token = jwtService.generateToken(savedUser.getUsername());
+        return new AuthResponseDto(token, UserMapper.toDto(savedUser));
     }
 
     @Override
@@ -110,7 +116,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto authenticateUser(LoginDto loginDto) {
+    public AuthResponseDto authenticateUser(LoginDto loginDto) {
         if (loginDto == null) {
             throw new BadRequestException("Username and password are required.");
         }
@@ -129,6 +135,17 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Invalid username or password.");
         }
 
+        String token = jwtService.generateToken(user.getUsername());
+        return new AuthResponseDto(token, UserMapper.toDto(user));
+    }
+
+    @Override
+    public UserDto getCurrentUser(String username) {
+        if (username == null || username.isBlank()) {
+            throw new BadRequestException("User not found.");
+        }
+        User user = userRepository.findByUsernameIgnoreCase(username.trim())
+                .orElseThrow(() -> new BadRequestException("User not found."));
         return UserMapper.toDto(user);
     }
 
@@ -163,7 +180,7 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         if (!storedPassword.startsWith("sha256:")) {
-            return rawPassword.equals(storedPassword);
+            return passwordEncoder.matches(rawPassword, storedPassword);
         }
         return hashPassword(rawPassword).equals(storedPassword);
     }

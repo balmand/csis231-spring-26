@@ -1,6 +1,7 @@
 package com.csis231.springpostgrescrud;
 
 import com.csis231.springpostgrescrud.dto.LoginDto;
+import com.csis231.springpostgrescrud.dto.AuthResponseDto;
 import com.csis231.springpostgrescrud.dto.UserDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,22 +36,38 @@ class UserAuthIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registration)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.username").value("alice"))
-                .andExpect(jsonPath("$.email").value("alice@example.com"))
-                .andExpect(jsonPath("$.password").doesNotExist())
+                .andExpect(jsonPath("$.token").isString())
+                .andExpect(jsonPath("$.user.id").isNumber())
+                .andExpect(jsonPath("$.user.username").value("alice"))
+                .andExpect(jsonPath("$.user.email").value("alice@example.com"))
+                .andExpect(jsonPath("$.user.password").doesNotExist())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        JsonNode registeredUser = objectMapper.readTree(registerBody);
-        assertThat(registeredUser.get("id").asLong()).isPositive();
+        AuthResponseDto registerResponse = objectMapper.readValue(registerBody, AuthResponseDto.class);
+        assertThat(registerResponse.getToken()).isNotBlank();
+        assertThat(registerResponse.getUser().getId()).isPositive();
 
         LoginDto login = new LoginDto("alice", "secret123");
 
-        mockMvc.perform(post("/api/v1/users/login")
+        String loginBody = mockMvc.perform(post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").isString())
+                .andExpect(jsonPath("$.user.username").value("alice"))
+                .andExpect(jsonPath("$.user.email").value("alice@example.com"))
+                .andExpect(jsonPath("$.user.password").doesNotExist())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        AuthResponseDto loginResponse = objectMapper.readValue(loginBody, AuthResponseDto.class);
+        assertThat(loginResponse.getToken()).isNotBlank();
+
+        mockMvc.perform(get("/api/v1/auth/me")
+                        .header("Authorization", "Bearer " + loginResponse.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("alice"))
                 .andExpect(jsonPath("$.email").value("alice@example.com"))

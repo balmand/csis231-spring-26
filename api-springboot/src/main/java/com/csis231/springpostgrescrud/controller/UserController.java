@@ -1,6 +1,7 @@
 package com.csis231.springpostgrescrud.controller;
 
 import com.csis231.springpostgrescrud.dto.LoginDto;
+import com.csis231.springpostgrescrud.dto.AuthResponseDto;
 import com.csis231.springpostgrescrud.dto.UserDto;
 import com.csis231.springpostgrescrud.dto.PagedResponseDto;
 import com.csis231.springpostgrescrud.exeption.BadRequestException;
@@ -25,8 +26,8 @@ public class UserController {
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "username", "email");
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
-        UserDto savedUser = userService.registerUser(userDto);
+    public ResponseEntity<AuthResponseDto> registerUser(@RequestBody UserDto userDto) {
+        AuthResponseDto savedUser = userService.registerUser(userDto);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
@@ -107,8 +108,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> authenticateUser(@RequestBody LoginDto loginDto) {
-        UserDto authenticatedUser = userService.authenticateUser(loginDto);
+    public ResponseEntity<AuthResponseDto> authenticateUser(@RequestBody LoginDto loginDto) {
+        AuthResponseDto authenticatedUser = userService.authenticateUser(loginDto);
         return ResponseEntity.ok(authenticatedUser);
     }
 }
