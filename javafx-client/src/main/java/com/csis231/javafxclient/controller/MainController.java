@@ -1,8 +1,10 @@
 package com.csis231.javafxclient.controller;
 
+import com.csis231.javafxclient.model.AuthResponseDto;
 import com.csis231.javafxclient.model.LoginDto;
 import com.csis231.javafxclient.model.UserDto;
 import com.csis231.javafxclient.service.ApiClient;
+import com.csis231.javafxclient.service.ApiSession;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -111,10 +113,11 @@ public class MainController {
 
         runAuthTask(new Task<>() {
             @Override
-            protected UserDto call() throws Exception {
+            protected AuthResponseDto call() throws Exception {
                 return apiClient.login(new LoginDto(username, password));
             }
-        }, user -> {
+        }, auth -> {
+            UserDto user = auth.getUser();
             authStatusLabel.setText("Welcome back, " + user.getUsername() + ".");
             loginPasswordField.clear();
             showMainApp(user);
@@ -139,22 +142,25 @@ public class MainController {
 
         runAuthTask(new Task<>() {
             @Override
-            protected UserDto call() throws Exception {
+            protected AuthResponseDto call() throws Exception {
                 return apiClient.registerUser(new UserDto(null, username, email, password));
             }
-        }, user -> {
-            authStatusLabel.setText("Registration successful. You can now sign in as " + user.getUsername() + ".");
+        }, auth -> {
+            UserDto user = auth.getUser();
+            authStatusLabel.setText("Registration successful. Signed in as " + user.getUsername() + ".");
             loginUsernameField.setText(user.getUsername());
             loginPasswordField.clear();
             registerUsernameField.clear();
             registerEmailField.clear();
             registerPasswordField.clear();
             registerConfirmPasswordField.clear();
+            showMainApp(user);
         });
     }
 
     @FXML
     private void handleLogout() {
+        ApiSession.clear();
         showAuthenticationState();
         authStatusLabel.setText("You have been logged out.");
         loginPasswordField.clear();
@@ -181,7 +187,7 @@ public class MainController {
         logoutButton.setManaged(false);
     }
 
-    private void runAuthTask(Task<UserDto> task, java.util.function.Consumer<UserDto> onSuccess) {
+    private void runAuthTask(Task<AuthResponseDto> task, java.util.function.Consumer<AuthResponseDto> onSuccess) {
         setAuthLoading(true);
         authStatusLabel.setText("");
         task.setOnSucceeded(event -> {

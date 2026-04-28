@@ -3,6 +3,7 @@ package com.csis231.javafxclient.service;
 import com.csis231.javafxclient.model.DepartmentDto;
 import com.csis231.javafxclient.model.EmployeeDto;
 import com.csis231.javafxclient.model.ClientDto;
+import com.csis231.javafxclient.model.AuthResponseDto;
 import com.csis231.javafxclient.model.LoginDto;
 import com.csis231.javafxclient.model.PagedResponseDto;
 import com.csis231.javafxclient.model.UserDto;
@@ -24,7 +25,6 @@ public class ApiClient {
     private static final String BASE_URL = "http://localhost:8080/api/v1";
     private final HttpClient httpClient;
     private final Gson gson;
-    private String authToken;
 
     public ApiClient() {
         this.httpClient = HttpClient.newHttpClient();
@@ -32,14 +32,14 @@ public class ApiClient {
     }
 
     public void setAuthToken(String authToken) {
-        this.authToken = authToken;
+        ApiSession.setToken(authToken);
     }
 
     public String getAuthToken() {
-        return authToken;
+        return ApiSession.getToken();
     }
 
-    public UserDto registerUser(UserDto user) throws IOException, InterruptedException {
+    public AuthResponseDto registerUser(UserDto user) throws IOException, InterruptedException {
         String json = gson.toJson(user);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/users/register"))
@@ -49,12 +49,16 @@ public class ApiClient {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 201) {
-            return gson.fromJson(response.body(), UserDto.class);
+            AuthResponseDto auth = gson.fromJson(response.body(), AuthResponseDto.class);
+            if (auth != null && auth.getToken() != null && !auth.getToken().isBlank()) {
+                ApiSession.setToken(auth.getToken());
+            }
+            return auth;
         }
         throw buildApiException("Failed to register user", response);
     }
 
-    public UserDto login(LoginDto loginDto) throws IOException, InterruptedException {
+    public AuthResponseDto login(LoginDto loginDto) throws IOException, InterruptedException {
         String json = gson.toJson(loginDto);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/users/login"))
@@ -64,15 +68,27 @@ public class ApiClient {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() == 200) {
-            return gson.fromJson(response.body(), UserDto.class);
+            AuthResponseDto auth = gson.fromJson(response.body(), AuthResponseDto.class);
+            if (auth != null && auth.getToken() != null && !auth.getToken().isBlank()) {
+                ApiSession.setToken(auth.getToken());
+            }
+            return auth;
         }
         throw buildApiException("Failed to login", response);
     }
 
+    private HttpRequest.Builder newRequestBuilder(String url) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(url));
+        String token = ApiSession.getToken();
+        if (token != null && !token.isBlank()) {
+            builder.header("Authorization", "Bearer " + token);
+        }
+        return builder;
+    }
+
     // Employee endpoints
     public List<EmployeeDto> getAllEmployees() throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/employees"))
+        HttpRequest request = newRequestBuilder(BASE_URL + "/employees")
                 .GET()
                 .build();
 
@@ -84,8 +100,7 @@ public class ApiClient {
     }
 
     public EmployeeDto getEmployeeById(Long id) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/employees/" + id))
+        HttpRequest request = newRequestBuilder(BASE_URL + "/employees/" + id)
                 .GET()
                 .build();
 
@@ -98,8 +113,7 @@ public class ApiClient {
 
     public EmployeeDto createEmployee(EmployeeDto employee) throws IOException, InterruptedException {
         String json = gson.toJson(employee);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/employees"))
+        HttpRequest request = newRequestBuilder(BASE_URL + "/employees")
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -113,8 +127,7 @@ public class ApiClient {
 
     public EmployeeDto updateEmployee(Long id, EmployeeDto employee) throws IOException, InterruptedException {
         String json = gson.toJson(employee);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/employees/" + id))
+        HttpRequest request = newRequestBuilder(BASE_URL + "/employees/" + id)
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -141,8 +154,7 @@ public class ApiClient {
 
         System.out.println(url);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
+        HttpRequest request = newRequestBuilder(url)
                 .GET()
                 .build();
 
@@ -155,8 +167,7 @@ public class ApiClient {
 
     // Department endpoints
     public List<DepartmentDto> getAllDepartments() throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/departments"))
+        HttpRequest request = newRequestBuilder(BASE_URL + "/departments")
                 .GET()
                 .build();
 
@@ -168,8 +179,7 @@ public class ApiClient {
     }
 
     public DepartmentDto getDepartmentById(Long id) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/departments/" + id))
+        HttpRequest request = newRequestBuilder(BASE_URL + "/departments/" + id)
                 .GET()
                 .build();
 
@@ -182,8 +192,7 @@ public class ApiClient {
 
     public DepartmentDto createDepartment(DepartmentDto department) throws IOException, InterruptedException {
         String json = gson.toJson(department);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/departments"))
+        HttpRequest request = newRequestBuilder(BASE_URL + "/departments")
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -197,8 +206,7 @@ public class ApiClient {
 
     public DepartmentDto updateDepartment(Long id, DepartmentDto department) throws IOException, InterruptedException {
         String json = gson.toJson(department);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/departments/" + id))
+        HttpRequest request = newRequestBuilder(BASE_URL + "/departments/" + id)
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -211,8 +219,7 @@ public class ApiClient {
     }
 
     public void deleteDepartment(Long id) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/departments/" + id))
+        HttpRequest request = newRequestBuilder(BASE_URL + "/departments/" + id)
                 .DELETE()
                 .build();
 
@@ -224,8 +231,7 @@ public class ApiClient {
 
         // Client endpoints
         public List<ClientDto> getAllClients() throws IOException, InterruptedException {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(BASE_URL + "/clients"))
+            HttpRequest request = newRequestBuilder(BASE_URL + "/clients")
                     .GET()
                     .build();
     
@@ -237,8 +243,7 @@ public class ApiClient {
         }
     
         public ClientDto getClientById(Long id) throws IOException, InterruptedException {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(BASE_URL + "/clients/" + id))
+            HttpRequest request = newRequestBuilder(BASE_URL + "/clients/" + id)
                     .GET()
                     .build();
     
@@ -251,8 +256,7 @@ public class ApiClient {
     
         public ClientDto createClient(ClientDto client) throws IOException, InterruptedException {
             String json = gson.toJson(client);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(BASE_URL + "/clients"))
+            HttpRequest request = newRequestBuilder(BASE_URL + "/clients")
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
@@ -266,8 +270,7 @@ public class ApiClient {
     
         public ClientDto updateClient(Long id, ClientDto client) throws IOException, InterruptedException {
             String json = gson.toJson(client);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(BASE_URL + "/clients/" + id))
+            HttpRequest request = newRequestBuilder(BASE_URL + "/clients/" + id)
                     .header("Content-Type", "application/json")
                     .PUT(HttpRequest.BodyPublishers.ofString(json))
                     .build();
@@ -280,8 +283,7 @@ public class ApiClient {
         }
     
         public void deleteClient(Long id) throws IOException, InterruptedException {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(BASE_URL + "/clients/" + id))
+            HttpRequest request = newRequestBuilder(BASE_URL + "/clients/" + id)
                     .DELETE()
                     .build();
     

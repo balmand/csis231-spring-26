@@ -6,6 +6,7 @@ com/csis231/javafxclient/controller/ClientController.class
 com/csis231/javafxclient/service/ApiClient$1.class
 com/csis231/javafxclient/service/ApiClient.class
 com/csis231/javafxclient/model/DepartmentDto.class
+com/csis231/javafxclient/model/AuthResponseDto.class
 com/csis231/javafxclient/controller/EmployeeController$2.class
 com/csis231/javafxclient/model/OrderDto.class
 com/csis231/javafxclient/controller/EmployeeController$1.class
@@ -16,6 +17,7 @@ com/csis231/javafxclient/service/ApiClient$4.class
 com/csis231/javafxclient/model/UserDto.class
 com/csis231/javafxclient/controller/DepartmentController.class
 com/csis231/javafxclient/service/ApiClient$2.class
+com/csis231/javafxclient/service/ApiSession.class
 com/csis231/javafxclient/controller/EmployeeController$3.class
 com/csis231/javafxclient/controller/MainController$1.class
 com/csis231/javafxclient/model/LoginDto.class

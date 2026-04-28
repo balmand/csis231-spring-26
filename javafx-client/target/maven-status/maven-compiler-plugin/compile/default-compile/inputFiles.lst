@@ -8,6 +8,8 @@
 /Users/cbf/dev/edu/csis231-spring-26/javafx-client/src/main/java/com/csis231/javafxclient/controller/MainController.java
 /Users/cbf/dev/edu/csis231-spring-26/javafx-client/src/main/java/com/csis231/javafxclient/controller/ClientController.java
 /Users/cbf/dev/edu/csis231-spring-26/javafx-client/src/main/java/com/csis231/javafxclient/model/LoginDto.java
+/Users/cbf/dev/edu/csis231-spring-26/javafx-client/src/main/java/com/csis231/javafxclient/model/AuthResponseDto.java
 /Users/cbf/dev/edu/csis231-spring-26/javafx-client/src/main/java/com/csis231/javafxclient/JavaFXClientApp.java
 /Users/cbf/dev/edu/csis231-spring-26/javafx-client/src/main/java/com/csis231/javafxclient/model/PagedResponseDto.java
+/Users/cbf/dev/edu/csis231-spring-26/javafx-client/src/main/java/com/csis231/javafxclient/service/ApiSession.java
 /Users/cbf/dev/edu/csis231-spring-26/javafx-client/src/main/java/com/csis231/javafxclient/controller/EmployeeController.java
