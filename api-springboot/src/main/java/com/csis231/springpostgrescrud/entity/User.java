@@ -24,4 +24,10 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    /**
+     * Spring Security-style role (e.g. ROLE_USER, ROLE_ADMIN).
+     */
+    @Column(nullable = false)
+    private String role = "ROLE_USER";
 }

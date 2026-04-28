@@ -10,9 +10,13 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class JwtService {
+
+    public static final String ROLE_CLAIM = "role";
 
     private final SecretKey key;
     private final long expirationSeconds;
@@ -26,10 +30,20 @@ public class JwtService {
     }
 
     public String generateToken(String subject) {
+        return generateToken(subject, null);
+    }
+
+    public String generateToken(String subject, String role) {
         Instant now = Instant.now();
         Instant exp = now.plusSeconds(expirationSeconds);
 
+        Map<String, Object> claims = new HashMap<>();
+        if (role != null && !role.isBlank()) {
+            claims.put(ROLE_CLAIM, role);
+        }
+
         return Jwts.builder()
+                .claims(claims)
                 .subject(subject)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(exp))
@@ -39,6 +53,11 @@ public class JwtService {
 
     public String extractSubject(String token) {
         return parseAllClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        Object value = parseAllClaims(token).get(ROLE_CLAIM);
+        return value == null ? null : String.valueOf(value);
     }
 
     public boolean isTokenValid(String token) {

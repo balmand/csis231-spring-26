@@ -45,8 +45,11 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userDto.getUsername().trim());
         user.setEmail(userDto.getEmail().trim());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        if (user.getRole() == null || user.getRole().isBlank()) {
+            user.setRole("ROLE_USER");
+        }
         User savedUser = userRepository.save(user);
-        String token = jwtService.generateToken(savedUser.getUsername());
+        String token = jwtService.generateToken(savedUser.getUsername(), savedUser.getRole());
         return new AuthResponseDto(token, UserMapper.toDto(savedUser));
     }
 
@@ -135,7 +138,11 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Invalid username or password.");
         }
 
-        String token = jwtService.generateToken(user.getUsername());
+        String role = user.getRole();
+        if (role == null || role.isBlank()) {
+            role = "ROLE_USER";
+        }
+        String token = jwtService.generateToken(user.getUsername(), role);
         return new AuthResponseDto(token, UserMapper.toDto(user));
     }
 

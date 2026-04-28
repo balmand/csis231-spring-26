@@ -30,10 +30,15 @@ public class DbUserDetailsService implements UserDetailsService {
                 .or(() -> userRepository.findByEmailIgnoreCase(identifier))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
+        String role = user.getRole();
+        if (role == null || role.isBlank()) {
+            role = "ROLE_USER";
+        }
+
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                List.of(new SimpleGrantedAuthority(role))
         );
     }
 }
