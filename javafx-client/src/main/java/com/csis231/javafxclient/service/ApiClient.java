@@ -80,9 +80,17 @@ public class ApiClient {
     private HttpRequest.Builder newRequestBuilder(String url) {
         HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(url));
         String token = ApiSession.getToken();
-        if (token != null && !token.isBlank()) {
-            builder.header("Authorization", "Bearer " + token);
+        boolean isPublicAuthEndpoint =
+                url.endsWith("/users/login") || url.endsWith("/users/register");
+
+        if (token == null || token.isBlank()) {
+            if (!isPublicAuthEndpoint) {
+                throw new RuntimeException("Missing auth token. Please login first.");
+            }
+            return builder;
         }
+
+        builder.header("Authorization", "Bearer " + token);
         return builder;
     }
 
