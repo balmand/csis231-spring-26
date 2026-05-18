@@ -6,6 +6,8 @@ import com.csis231.springpostgrescrud.exeption.ResourceNotFoundException;
 import com.csis231.springpostgrescrud.mapper.DepartmentMapper;
 import com.csis231.springpostgrescrud.repository.DepartmentRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,6 +37,19 @@ public class DepartmentServiceImpl implements DepartmentService {
         return departmentRepository.findAll().stream()
                 .map(DepartmentMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<DepartmentDto> searchDepartments(String q, Pageable pageable) {
+        String query = q == null ? "" : q.trim();
+        if (query.isEmpty()) {
+            return departmentRepository.findAll(pageable).map(DepartmentMapper::toDto);
+        }
+        return departmentRepository
+                .findByNameContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                        query, query, pageable
+                )
+                .map(DepartmentMapper::toDto);
     }
 
     @Override
